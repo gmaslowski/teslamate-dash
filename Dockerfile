@@ -1,9 +1,11 @@
-# build
-FROM golang:1.22-alpine AS build
+# build (cross-compile from the native builder arch to the target arch)
+FROM --platform=$BUILDPLATFORM golang:1.22-alpine AS build
+ARG TARGETOS TARGETARCH
 WORKDIR /src
 RUN apk add --no-cache git
 COPY . .
-RUN go mod tidy && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/teslamate-dash .
+RUN go mod tidy && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+    go build -trimpath -ldflags="-s -w" -o /out/teslamate-dash .
 
 # run (distroless, non-root, static)
 FROM gcr.io/distroless/static-debian12:nonroot

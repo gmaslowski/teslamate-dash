@@ -1,5 +1,9 @@
 # TeslaMate Dash
 
+[![CI](https://github.com/gmaslowski/teslamate-dash/actions/workflows/ci.yml/badge.svg)](https://github.com/gmaslowski/teslamate-dash/actions/workflows/ci.yml)
+[![Docker](https://github.com/gmaslowski/teslamate-dash/actions/workflows/docker.yml/badge.svg)](https://github.com/gmaslowski/teslamate-dash/actions/workflows/docker.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A small, self-hosted, **read-only dashboard for [TeslaMate](https://github.com/teslamate-org/teslamate)**.
 It connects to your existing TeslaMate Postgres database and renders a clean, map-first view of your
 driving and charging history. One static Go binary, one container, no second database, and nothing is
@@ -38,6 +42,17 @@ Or with Go (1.22+):
 ```bash
 go run .          # demo mode when no DATABASE_HOST/TC_DSN is set
 ```
+
+### Published image
+
+Multi-arch images (linux/amd64 and linux/arm64) are published to GHCR on every release:
+
+```bash
+docker run --rm -p 4001:4001 ghcr.io/gmaslowski/teslamate-dash:latest
+# or pin a version: ghcr.io/gmaslowski/teslamate-dash:0.1.0
+```
+
+Tags: `latest` (tip of `main`), `X.Y.Z` / `X.Y` / `X` (semver from git tags), and `sha-<commit>`.
 
 ## Connect to your TeslaMate database
 
