@@ -3,6 +3,7 @@
 [![CI](https://github.com/gmaslowski/teslamate-dash/actions/workflows/ci.yml/badge.svg)](https://github.com/gmaslowski/teslamate-dash/actions/workflows/ci.yml)
 [![Docker](https://github.com/gmaslowski/teslamate-dash/actions/workflows/docker.yml/badge.svg)](https://github.com/gmaslowski/teslamate-dash/actions/workflows/docker.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-gmaslowski-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/gmaslowski)
 
 A small, self-hosted, **read-only dashboard for [TeslaMate](https://github.com/teslamate-org/teslamate)**.
 It connects to your existing TeslaMate Postgres database and renders a clean, map-first view of your
@@ -97,6 +98,105 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO teslamate_ro;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO teslamate_ro;
 ```
 
+### Deploy with Helm (Kubernetes)
+
+A minimal self-contained chart. Create a `teslamate-dash/` directory with these four files:
+
+`teslamate-dash/Chart.yaml`
+
+```yaml
+apiVersion: v2
+name: teslamate-dash
+description: Read-only dashboard for TeslaMate
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+```
+
+`teslamate-dash/values.yaml`
+
+```yaml
+image:
+  repository: ghcr.io/gmaslowski/teslamate-dash
+  tag: "0.1.0"
+service:
+  port: 4001
+# Non-secret settings (reuses TeslaMate's DATABASE_* names).
+env:
+  DATABASE_HOST: teslamate-db
+  DATABASE_NAME: teslamate
+  DATABASE_USER: teslamate_ro
+  TC_UNITS: km
+# DB password is read from an existing Secret (create it separately, see below).
+dbPasswordSecret:
+  name: teslamate-dash-db
+  key: password
+```
+
+`teslamate-dash/templates/deployment.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: {{ .Release.Name }} }
+  template:
+    metadata:
+      labels: { app: {{ .Release.Name }} }
+    spec:
+      containers:
+        - name: teslamate-dash
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 4001
+          env:
+            {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.dbPasswordSecret.name }}
+                  key: {{ .Values.dbPasswordSecret.key }}
+          readinessProbe:
+            httpGet: { path: /, port: 4001 }
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+```
+
+`teslamate-dash/templates/service.yaml`
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  selector: { app: {{ .Release.Name }} }
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 4001
+```
+
+Create the DB password Secret, then install (use the read-only role from above):
+
+```bash
+kubectl create secret generic teslamate-dash-db --from-literal=password='secret'
+helm install teslamate-dash ./teslamate-dash
+# reach it: kubectl port-forward svc/teslamate-dash 4001:4001
+```
+
+Add an Ingress (or set `service.type: LoadBalancer`) to expose it beyond the cluster. For SSL to the
+database, set `TC_DSN` under `env` instead of the `DATABASE_*` parts.
+
 ### Not using Docker?
 
 Any reachable Postgres works. For a database that lives elsewhere (a remote host, a Kubernetes
@@ -120,7 +220,7 @@ All configuration is via environment variables. `TC_`-prefixed names override th
 | `TC_TITLE` | `TeslaMate Dash` | Header title |
 | `TC_MAP_STYLE_URL` | OpenFreeMap Positron | MapLibre style URL. Point at your own tiles for full privacy. |
 | `TC_DOWNSAMPLE` | `4` | Keep every Nth GPS point when drawing routes (higher is lighter) |
-| `TC_REDACT_HOME` | `true` | Reserved for hiding the home area in shareable views (not yet applied) |
+| `TC_REDACT_HOME` | `true` | Reserved flag for hiding the home area in shareable views. Parsed and exposed on `/api/config`, but not yet enforced, so it currently has no visible effect. |
 | `TC_DEMO` | auto | Force synthetic data on or off |
 
 ## Privacy
