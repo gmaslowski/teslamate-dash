@@ -1,0 +1,5 @@
+/teslamate-companion
+/teslamate-dash
+*.exe
+.env
+.DS_Store

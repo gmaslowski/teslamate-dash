@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TeslaMate Dash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="title">TeslaMate Dash</div>
+    <select class="car-select" id="car" hidden></select>
+    <div class="range" id="range">
+      <button class="range-btn on" data-range="all">All</button>
+      <button class="range-btn" data-range="year">1Y</button>
+      <button class="range-btn" data-range="90d">90D</button>
+      <button class="range-btn" data-range="30d">30D</button>
+    </div>
+    <span class="badge" id="demo-badge" hidden>demo data</span>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <main>
+    <div id="map" class="map">
+      <div class="loading" id="loading" hidden><span class="spin"></span>Updating</div>
+      <div class="layer-toggle" id="layers">
+        <button class="lyr on" data-layer="drives"><span class="dot drives"></span>Drives</button>
+        <button class="lyr on" data-layer="charging"><span class="dot charging"></span>Charging</button>
+      </div>
+      <div class="legend" id="legend" hidden>
+        <span class="legend-title">Top speed</span>
+        <span class="legend-bar"></span>
+        <span class="legend-scale"><span>slow</span><span>fast</span></span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    Read-only dashboard for TeslaMate. Your data stays on your machine. Basemap tiles load from the configured tile server.
+  </footer>
+
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

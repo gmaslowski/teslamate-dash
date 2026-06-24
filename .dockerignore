@@ -1,0 +1,9 @@
+.git
+.gitignore
+*.md
+docs/
+.env
+.DS_Store
+/teslamate-companion
+/teslamate-dash
+*.exe
