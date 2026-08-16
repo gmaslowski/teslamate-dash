@@ -243,6 +243,15 @@ All configuration is via environment variables. `TC_`-prefixed names override th
 | `TC_MAP_STYLE_URL` | OpenFreeMap Positron | MapLibre style URL. Point at your own tiles for full privacy. |
 | `TC_DEMO` | auto | Force synthetic data on or off |
 
+### Languages
+
+The web UI supports English, German, French, Spanish, Italian, Dutch, Norwegian, Swedish, Danish,
+Finnish, Polish, Portuguese, Simplified Chinese, Japanese, Korean, and Russian. The first visit uses
+the browser language; the globe button next to the theme button changes it and remembers the choice.
+Each translation is kept in its own JSON file under `src/web/src/locales/`. English is the fallback, so an
+untranslated key is shown in English instead of as a missing label. A small built-in helper handles
+language detection, plural forms, and persistence; changing the language reloads the page.
+
 ## Privacy
 
 This data is your home address, geofences, and full movement history. The app is built to keep it yours:

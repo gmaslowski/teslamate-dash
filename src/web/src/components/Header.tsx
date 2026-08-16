@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { Car } from '../api'
 import type { Theme } from '../App'
 import { daysAgo, isoDay, type RangeKey } from '../format'
+import { loc } from '../localization'
+import LanguageSwitcher from './LanguageSwitcher'
 
 type Props = {
   cars: Car[]
@@ -16,16 +18,16 @@ type Props = {
 }
 
 const RANGES: Array<[RangeKey, string]> = [
-  ['all', 'All'],
-  ['1y', '1Y'],
-  ['90d', '90D'],
-  ['30d', '30D'],
+  ['all', loc('all')],
+  ['1y', loc('oneYear')],
+  ['90d', loc('ninetyDays')],
+  ['30d', loc('thirtyDays')],
 ]
 
 const QUICK: Array<[string, number]> = [
-  ['This week', 7],
-  ['This month', 30],
-  ['This trip', 18],
+  [loc('thisWeek'), 7],
+  [loc('thisMonth'), 30],
+  [loc('thisTrip'), 18],
 ]
 
 export default function Header({ cars, carId, onPickCar, range, onPickRange, applied, onApplyCustom, theme, onToggleTheme }: Props) {
@@ -90,7 +92,7 @@ export default function Header({ cars, carId, onPickCar, range, onPickRange, app
               >
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: c.id === carId ? '#3ecf8e' : 'var(--border-check)' }} />
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--title)' }}>{c.name || `Car ${c.id}`}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--title)' }}>{c.name || loc('carFallback', { id: c.id })}</div>
                   <div style={{ fontSize: 10, color: 'var(--muted)', fontFamily: "'JetBrains Mono',monospace" }}>{c.model || ''}</div>
                 </div>
               </div>
@@ -132,17 +134,17 @@ export default function Header({ cars, carId, onPickCar, range, onPickRange, app
             <rect x="2.5" y="3.5" width="11" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" fill="none" />
             <path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          <span>{custom ? `${applied.from} → ${applied.to}` : 'Custom'}</span>
+          <span>{custom ? `${applied.from} → ${applied.to}` : loc('custom')}</span>
         </button>
 
         {showCustom && (
           <div style={{ position: 'absolute', top: 44, right: 0, width: 288, background: 'var(--popover)', border: '1px solid var(--border-strong)', borderRadius: 14, padding: 16, boxShadow: '0 16px 40px rgba(0,0,0,0.5)', zIndex: 40 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>Custom range</div>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>{loc('customRange')}</div>
             <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
               {(
                 [
-                  ['From', from, setFrom],
-                  ['To', to, setTo],
+                  [loc('from'), from, setFrom],
+                  [loc('to'), to, setTo],
                 ] as Array<[string, string, (v: string) => void]>
               ).map(([label, value, set]) => (
                 <label key={label} style={{ flex: 1 }}>
@@ -176,7 +178,7 @@ export default function Header({ cars, carId, onPickCar, range, onPickRange, app
                 onClick={() => setShowCustom(false)}
                 style={{ flex: 1, fontSize: 12, fontWeight: 500, color: 'var(--muted-2)', background: 'transparent', border: '1px solid var(--border-input)', borderRadius: 9, padding: 9, cursor: 'pointer' }}
               >
-                Cancel
+                {loc('cancel')}
               </button>
               <button
                 onClick={() => {
@@ -185,16 +187,18 @@ export default function Header({ cars, carId, onPickCar, range, onPickRange, app
                 }}
                 style={{ flex: 1, fontSize: 12, fontWeight: 600, color: '#fff', background: '#e0223a', border: 'none', borderRadius: 9, padding: 9, cursor: 'pointer' }}
               >
-                Apply
+                {loc('apply')}
               </button>
             </div>
           </div>
         )}
       </div>
 
+      <LanguageSwitcher />
+
       <button
         onClick={onToggleTheme}
-        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={theme === 'dark' ? loc('switchToLight') : loc('switchToDark')}
         style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--chip)', border: '1px solid var(--border-faint)', borderRadius: 10, cursor: 'pointer' }}
       >
         {theme === 'dark' ? (

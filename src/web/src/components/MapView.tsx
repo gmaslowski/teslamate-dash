@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, type ReactNode } fr
 import maplibregl from 'maplibre-gl'
 import type { Activity } from '../api'
 import { kmToUnit } from '../format'
+import { loc } from '../localization'
 
 export type MapHandle = {
   focusVisible: () => void
@@ -271,14 +272,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(
             <circle cx="8" cy="8" r="6" stroke="var(--muted)" strokeWidth="2.2" fill="none" opacity="0.35" />
             <path d="M8 2 a6 6 0 0 1 6 6" stroke="#e0223a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
           </svg>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>Loading history…</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>{loc('loadingHistory')}</span>
         </div>
       )}
 
       {showBadge && (
         <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 2, display: 'flex', alignItems: 'center', gap: 9, background: 'rgba(224,34,58,0.94)', borderRadius: 11, padding: '8px 14px', boxShadow: '0 6px 22px rgba(0,0,0,0.28)' }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff', boxShadow: '0 0 0 3px rgba(255,255,255,0.35)' }} />
-          <span style={{ fontSize: 12.5, fontWeight: 600, color: '#fff' }}>Presentation view · {selSummary}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 600, color: '#fff' }}>{loc('presentationView')} · {selSummary}</span>
         </div>
       )}
 
@@ -304,7 +305,7 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(
             const b = boundsOf(visibleRef.current)
             if (b && mapRef.current) mapRef.current.fitBounds(b, { padding: fitPadding(60), duration: 700 })
           }}
-          title="Fit route"
+          title={loc('fitRoute')}
           style={{ ...glass, width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 12, cursor: 'pointer', color: 'var(--text)' }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16">
@@ -317,14 +318,14 @@ const MapView = forwardRef<MapHandle, Props>(function MapView(
         <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <span style={{ width: 16, height: 3, borderRadius: 2, background: '#4f6bc0' }} />
-            <span style={{ fontSize: 11.5, color: 'var(--legend)' }}>Drives</span>
+            <span style={{ fontSize: 11.5, color: 'var(--legend)' }}>{loc('drives')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#3ecf8e', boxShadow: '0 0 0 3px rgba(62,207,142,0.22)' }} />
-            <span style={{ fontSize: 11.5, color: 'var(--legend)' }}>Charging</span>
+            <span style={{ fontSize: 11.5, color: 'var(--legend)' }}>{loc('charging')}</span>
           </div>
         </div>
-        <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Top speed</div>
+        <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>{loc('topSpeed')}</div>
         <div style={{ height: 7, borderRadius: 4, background: 'linear-gradient(90deg,#a9c0dd,#4f6bc0,#1b2b74)' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5, fontFamily: "'JetBrains Mono',monospace", fontSize: 9.5, color: 'var(--muted)' }}>
           <span>{Math.round(kmToUnit(30, units))}</span>
