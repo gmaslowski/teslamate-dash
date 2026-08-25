@@ -47,6 +47,10 @@ ever written back to TeslaMate.
 - **Any timeframe.** All time, last year, 90 days, 30 days, or a custom From/To range with quick
   presets.
 - **Per-car.** Multi-car aware; pick a vehicle in the header and the whole dashboard filters to it.
+- **Speaks your language.** The UI ships in 16 languages — English, German, French, Spanish,
+  Italian, Dutch, Norwegian, Swedish, Danish, Finnish, Polish, Portuguese, Simplified Chinese,
+  Japanese, Korean, and Russian. It follows your browser on the first visit; a globe button in the
+  header switches it and remembers your choice.
 
 
 ## Quick start (demo, no database)
@@ -70,7 +74,7 @@ Multi-arch images (linux/amd64 and linux/arm64) are published to GHCR on every r
 
 ```bash
 docker run --rm -p 4001:4001 ghcr.io/gmaslowski/teslamate-dash:latest
-# or pin a version: ghcr.io/gmaslowski/teslamate-dash:0.1.0
+# or pin a version: ghcr.io/gmaslowski/teslamate-dash:0.4.0
 ```
 
 Tags: `latest` (tip of `main`), `X.Y.Z` / `X.Y` / `X` (semver from git tags), and `sha-<commit>`.
@@ -132,7 +136,7 @@ name: teslamate-dash
 description: Read-only dashboard for TeslaMate
 type: application
 version: 0.1.0
-appVersion: "0.1.0"
+appVersion: "0.4.0"
 ```
 
 `teslamate-dash/values.yaml`
@@ -140,7 +144,7 @@ appVersion: "0.1.0"
 ```yaml
 image:
   repository: ghcr.io/gmaslowski/teslamate-dash
-  tag: "0.1.0"
+  tag: "0.4.0"
 service:
   port: 4001
 # Non-secret settings (reuses TeslaMate's DATABASE_* names).
@@ -245,12 +249,12 @@ All configuration is via environment variables. `TC_`-prefixed names override th
 
 ### Languages
 
-The web UI supports English, German, French, Spanish, Italian, Dutch, Norwegian, Swedish, Danish,
-Finnish, Polish, Portuguese, Simplified Chinese, Japanese, Korean, and Russian. The first visit uses
-the browser language; the globe button next to the theme button changes it and remembers the choice.
-Each translation is kept in its own JSON file under `src/web/src/locales/`. English is the fallback, so an
-untranslated key is shown in English instead of as a missing label. A small built-in helper handles
-language detection, plural forms, and persistence; changing the language reloads the page.
+The UI ships in 16 languages, listed under [Features](#features). The first visit follows the browser
+language; the globe button next to the theme toggle changes it and remembers the choice. Each
+translation is its own JSON file under `src/web/src/locales/`, and English is the fallback, so an
+untranslated key renders in English rather than as a missing label. Detection, plural forms, and
+persistence are handled by a small built-in helper with no i18n dependency; changing the language
+reloads the page.
 
 ## Privacy
 
