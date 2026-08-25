@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Activity } from '../api'
 import { fmtHShort, fmtInt, kmToUnit } from '../format'
+import { loc } from '../localization'
 
 type Props = {
   /** the selected activities in chronological order */
@@ -62,18 +63,18 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
       <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 12, padding: 16, borderBottom: '1px solid var(--border)' }}>
         <button
           onClick={onClose}
-          title="Close"
+          title={loc('close')}
           style={{ width: 34, height: 34, flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--chip)', border: '1px solid var(--border-chip)', borderRadius: 10, cursor: 'pointer', color: 'var(--legend)' }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M9.5 3.5 L5 8 L9.5 12.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>Trip summary</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>{loc('tripSummary')}</div>
           <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-strong)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dest}</div>
         </div>
         <div style={{ textAlign: 'right', flex: '0 0 auto' }}>
           <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 17, fontWeight: 600, color: 'var(--text-strong)' }}>{fmtHShort(driveMin + chargeMin)}</div>
-          <div style={{ fontSize: 10, color: 'var(--muted)' }}>total</div>
+          <div style={{ fontSize: 10, color: 'var(--muted)' }}>{loc('total')}</div>
         </div>
       </div>
 
@@ -83,14 +84,14 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
             <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 8 H12 M8.5 4.5 L12.5 8 L8.5 11.5" stroke="#7d9bf0" strokeWidth="1.7" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
             <div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, fontWeight: 600, color: 'var(--text-strong)' }}>{fmtHShort(driveMin)}</div>
-              <div style={{ fontSize: 10, color: 'var(--muted)' }}>{fmtInt(kmToUnit(distance, units))} {units} driving</div>
+              <div style={{ fontSize: 10, color: 'var(--muted)' }}>{fmtInt(kmToUnit(distance, units))} {units} {loc('driving')}</div>
             </div>
           </div>
           <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '11px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <svg width="15" height="16" viewBox="0 0 12 14"><polygon points="7,0 0,8 5,8 4,14 12,5 6,5" fill="#3ecf8e" /></svg>
             <div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, fontWeight: 600, color: 'var(--text-strong)' }}>{fmtHShort(chargeMin)}</div>
-              <div style={{ fontSize: 10, color: 'var(--muted)' }}>{fmtInt(energy)} kWh · {charges.length} {charges.length === 1 ? 'stop' : 'stops'}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted)' }}>{fmtInt(energy)} kWh · {loc('stopCount', { count: charges.length })}</div>
             </div>
           </div>
         </div>
@@ -98,7 +99,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
         {segs.length > 0 && (
           <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '11px 13px 9px', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>Battery over trip</div>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>{loc('batteryOverTrip')}</div>
               <div style={{ fontSize: 10.5, fontFamily: "'JetBrains Mono',monospace", color: 'var(--legend)' }}>{originSoc}% → {destSoc}%</div>
             </div>
             <svg viewBox={`0 0 ${CW} ${CH}`} width="100%" height="64" preserveAspectRatio="none">
@@ -117,11 +118,11 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
             <div style={{ display: 'flex', gap: 14, marginTop: 5 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 14, height: 3, borderRadius: 2, background: '#5f7fd6' }} />
-                <span style={{ fontSize: 10, color: 'var(--muted-2)' }}>Driving</span>
+                <span style={{ fontSize: 10, color: 'var(--muted-2)' }}>{loc('driving')}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ width: 14, height: 3, borderRadius: 2, background: '#3ecf8e' }} />
-                <span style={{ fontSize: 10, color: 'var(--muted-2)' }}>Charging</span>
+                <span style={{ fontSize: 10, color: 'var(--muted-2)' }}>{loc('charging')}</span>
               </div>
             </div>
           </div>
@@ -136,7 +137,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
               <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-strong)' }}>{origin}</div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: 'var(--legend)' }}>{originSoc}%</div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--muted)' }}>Departure</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)' }}>{loc('departure')}</div>
           </div>
 
           {acts.map((a) => {
@@ -154,7 +155,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
                           {fmtInt(kmToUnit(a.km ?? 0, units))} {units}
                         </span>
                         <span style={{ fontSize: 11, color: 'var(--muted)' }}>
-                          Drive · ↯ {Math.round(kmToUnit(a.maxKmh ?? 0, units))} {units === 'mi' ? 'mph' : 'km/h'}
+                          {loc('drive')} · ↯ {Math.round(kmToUnit(a.maxKmh ?? 0, units))} {units === 'mi' ? 'mph' : 'km/h'}
                         </span>
                       </div>
                       <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: 'var(--muted)' }}>{fmtHShort(a.durMin)}</span>
@@ -195,7 +196,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
                         {Math.round(a.peakKw ?? 0)} kW
                       </span>
                       <span style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {a.category === 'home' ? 'Home AC' : a.category === 'destination' ? 'Destination' : 'DC fast'}
+                        {a.category === 'home' ? loc('homeAc') : a.category === 'destination' ? loc('destination') : loc('dcFast')}
                       </span>
                     </div>
                     <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: 'var(--muted)' }}>{fmtHShort(a.durMin)}</span>
@@ -225,7 +226,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
               <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-strong)' }}>{dest}</div>
               <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: 'var(--legend)' }}>{destSoc}%</div>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--muted)' }}>Arrival</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)' }}>{loc('arrival')}</div>
           </div>
         </div>
       </div>
@@ -236,7 +237,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
           className="hover-bright"
           style={{ flex: 1, fontSize: 12, fontWeight: 600, color: 'var(--text)', background: 'var(--chip-active)', border: '1px solid var(--border-strong)', borderRadius: 10, padding: 10, cursor: 'pointer' }}
         >
-          Fit route
+          {loc('fitRoute')}
         </button>
         <button
           onClick={share}
@@ -245,7 +246,7 @@ export default function TripSummary({ acts, units, onClose, onFitRoute, selected
           <svg width="14" height="14" viewBox="0 0 16 16">
             <path d="M11 5.5 L14 3 v5 M14 3 L8.5 8.5 M13 9v3.5a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1H7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {copied ? 'Copied!' : 'Share'}
+          {copied ? loc('copied') : loc('share')}
         </button>
       </div>
     </div>

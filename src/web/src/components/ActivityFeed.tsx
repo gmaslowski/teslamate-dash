@@ -1,6 +1,7 @@
 import type { Activity } from '../api'
 import type { TypeFilter } from '../App'
 import { feedDate } from '../format'
+import { loc } from '../localization'
 
 type Props = {
   activities: Activity[]
@@ -19,9 +20,9 @@ type Props = {
 }
 
 const TYPES: Array<[TypeFilter, string]> = [
-  ['all', 'All'],
-  ['drive', 'Drives'],
-  ['charge', 'Charging'],
+  ['all', loc('all')],
+  ['drive', loc('drives')],
+  ['charge', loc('charging')],
 ]
 
 export default function ActivityFeed(p: Props) {
@@ -31,12 +32,12 @@ export default function ActivityFeed(p: Props) {
     <>
       <div style={{ flex: '0 0 auto', padding: '4px 20px 10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 11 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>Recent activity</div>
+          <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>{loc('recentActivity')}</div>
           <button
             onClick={p.onToggleSelectAll}
             style={{ fontSize: 11, fontWeight: 500, color: 'var(--muted-2)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
           >
-            {p.allSelected ? 'Clear all' : 'Select all'}
+            {p.allSelected ? loc('clearAll') : loc('selectAll')}
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -57,7 +58,7 @@ export default function ActivityFeed(p: Props) {
           <div style={{ flex: 1 }} />
           <button
             onClick={p.onToggleHide}
-            title="Hide home & destination charging"
+            title={loc('hideHomeDestination')}
             style={{
               width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, cursor: 'pointer',
               ...(p.hideHomeDest
@@ -147,11 +148,11 @@ export default function ActivityFeed(p: Props) {
           )
         })}
         {!p.error && !p.activities.length && !p.historyLoading && (
-          <div style={{ padding: '14px 11px', fontSize: 12, color: 'var(--faint)' }}>No activity in this range.</div>
+          <div style={{ padding: '14px 11px', fontSize: 12, color: 'var(--faint)' }}>{loc('noActivity')}</div>
         )}
         {p.historyLoading && (
           <div style={{ padding: '10px 11px', fontSize: 11, color: 'var(--faint)', fontFamily: "'JetBrains Mono',monospace" }}>
-            Loading older activity…
+            {loc('loadingOlderActivity')}
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { fmtInt, kmToUnit } from '../format'
+import { loc } from '../localization'
 
 type Props = {
   hasSel: boolean
@@ -19,14 +20,14 @@ export default function SelectionBar({ hasSel, summary, km, units, onClear, onFo
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--title)' }}>{summary}</div>
               <div style={{ fontSize: 10.5, color: 'var(--muted)', fontFamily: "'JetBrains Mono',monospace" }}>
-                {km > 0 ? `${fmtInt(kmToUnit(km, units))} ${units} on map` : 'charging stops only'}
+                {km > 0 ? loc('distanceOnMap', { distance: fmtInt(kmToUnit(km, units)), unit: units }) : loc('chargingStopsOnly')}
               </div>
             </div>
             <button
               onClick={onClear}
               style={{ fontSize: 11.5, fontWeight: 500, color: 'var(--muted-2)', background: 'transparent', border: '1px solid var(--border-input)', borderRadius: 9, padding: '8px 12px', cursor: 'pointer' }}
             >
-              Clear
+              {loc('clear')}
             </button>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -35,13 +36,13 @@ export default function SelectionBar({ hasSel, summary, km, units, onClear, onFo
               className="hover-bright"
               style={{ flex: 1, fontSize: 11.5, fontWeight: 600, color: 'var(--text)', background: 'var(--chip-active)', border: '1px solid var(--border-strong)', borderRadius: 9, padding: 9, cursor: 'pointer' }}
             >
-              Focus map
+              {loc('focusMap')}
             </button>
             <button
               onClick={onTrip}
               style={{ flex: 1, fontSize: 11.5, fontWeight: 600, color: '#fff', background: '#e0223a', border: 'none', borderRadius: 9, padding: 9, cursor: 'pointer', boxShadow: '0 2px 10px rgba(224,34,58,0.35)' }}
             >
-              Trip summary
+              {loc('tripSummary')}
             </button>
           </div>
         </div>
@@ -52,7 +53,7 @@ export default function SelectionBar({ hasSel, summary, km, units, onClear, onFo
             <circle cx="8" cy="8" r="1.7" fill="currentColor" />
           </svg>
           <div style={{ fontSize: 11.5, lineHeight: 1.35 }}>
-            Tap a row to see its details, or tick items to isolate them and build a trip you can present.
+            {loc('selectionHint')}
           </div>
         </div>
       )}

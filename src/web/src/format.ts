@@ -1,4 +1,5 @@
 import type { Activity } from './api'
+import { loc } from './localization'
 
 export type RangeKey = 'all' | '1y' | '90d' | '30d' | 'custom'
 
@@ -40,7 +41,7 @@ export function rangeLabel(
     const newest = new Date(activities[0].date)
     return `${monthYear(oldest)} — ${monthYear(newest)}`
   }
-  return 'All time'
+  return loc('allTime')
 }
 
 export function kmToUnit(km: number, units: 'km' | 'mi'): number {
@@ -55,5 +56,7 @@ export function fmtInt(n: number): string {
 export function fmtHShort(min: number): string {
   const h = Math.floor(min / 60)
   const m = Math.round(min % 60)
-  return h ? `${h}h ${m}m` : `${m}m`
+  return h
+    ? loc('durationHours', { hours: h, minutes: m })
+    : loc('durationMinutes', { minutes: m })
 }

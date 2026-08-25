@@ -1,5 +1,6 @@
 import type { Summary } from '../api'
 import { fmtInt, kmToUnit } from '../format'
+import { loc } from '../localization'
 
 type Props = {
   summary: Summary | null
@@ -40,7 +41,7 @@ export default function KpiGrid({ summary, units, label }: Props) {
   const effFactor = units === 'mi' ? 1.60934 : 1
   const cards = [
     {
-      name: 'Distance',
+      name: loc('distance'),
       value: s ? fmtInt(kmToUnit(s.distance_km, units)) : '—',
       unit: units,
       delta: s?.deltas ? kmToUnit(s.deltas.distance_km, units) : undefined,
@@ -49,7 +50,7 @@ export default function KpiGrid({ summary, units, label }: Props) {
       color: '#5f7fd6',
     },
     {
-      name: 'Drives',
+      name: loc('drives'),
       value: s ? fmtInt(s.drives) : '—',
       unit: '',
       delta: s?.deltas?.drives,
@@ -58,7 +59,7 @@ export default function KpiGrid({ summary, units, label }: Props) {
       color: '#5f7fd6',
     },
     {
-      name: 'Energy',
+      name: loc('energy'),
       value: s ? fmtInt(s.energy_kwh) : '—',
       unit: 'kWh',
       delta: s?.deltas?.energy_kwh,
@@ -67,7 +68,7 @@ export default function KpiGrid({ summary, units, label }: Props) {
       color: '#3ecf8e',
     },
     {
-      name: 'Efficiency',
+      name: loc('efficiency'),
       value: s ? fmtInt(s.efficiency_wh_km * effFactor) : '—',
       unit: `Wh/${units}`,
       delta: s?.deltas ? s.deltas.efficiency_wh_km * effFactor : undefined,
@@ -80,7 +81,7 @@ export default function KpiGrid({ summary, units, label }: Props) {
   return (
     <div style={{ flex: '0 0 auto', padding: '18px 20px 14px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>Overview</div>
+        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>{loc('overview')}</div>
         <div style={{ fontSize: 10.5, fontFamily: "'JetBrains Mono',monospace", color: 'var(--muted-3)', background: 'var(--chip)', border: '1px solid var(--border)', borderRadius: 6, padding: '3px 8px' }}>
           {label}
         </div>

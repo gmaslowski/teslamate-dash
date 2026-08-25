@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, type ActivityDetail, type CurvePoint, type SeriesPoint } from '../api'
 import { feedDate, fmtHShort, fmtInt, kmToUnit } from '../format'
+import { loc } from '../localization'
 
 type Props = {
   id: string
@@ -93,12 +94,12 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
   let badgeColor = '#7d9bf0'
   let badgeBg = 'rgba(125,155,240,0.14)'
   if (d) {
-    if (!isCharge) badge = 'Drive'
+    if (!isCharge) badge = loc('drive')
     else if (d.category === 'supercharger') {
-      badge = 'Supercharger / DC'
+      badge = loc('superchargerDc')
       badgeColor = '#3ecf8e'
       badgeBg = 'rgba(62,207,142,0.14)'
-    } else badge = d.category === 'home' ? 'Home / AC' : 'Destination / AC'
+    } else badge = d.category === 'home' ? loc('homeAc') : loc('destinationAc')
   }
 
   const socLo = d ? Math.min(d.socStart, d.socEnd) : 0
@@ -116,7 +117,7 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
       style={{ position: 'absolute', top: 14, left: 14, bottom: 14, width: 366, zIndex: 6, background: 'var(--panel)', border: '1px solid var(--border-chip)', borderRadius: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
     >
       <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 12, padding: '16px 16px 14px', borderBottom: '1px solid var(--border)' }}>
-        <button onClick={onClose} title="Close" style={{ ...navBtn, width: 34, height: 34, borderRadius: 10 }}>
+        <button onClick={onClose} title={loc('close')} style={{ ...navBtn, width: 34, height: 34, borderRadius: 10 }}>
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M9.5 3.5 L5 8 L9.5 12.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -127,14 +128,14 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
             <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: "'JetBrains Mono',monospace" }}>{d ? feedDate(d.date) : ''}</span>
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-strong)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {d?.title ?? (error ? 'Not found' : 'Loading…')}
+            {d?.title ?? (error ? loc('notFound') : loc('loading'))}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 4, flex: '0 0 auto' }}>
-          <button onClick={onPrev} title="Previous" style={navBtn}>
+          <button onClick={onPrev} title={loc('previous')} style={navBtn}>
             <svg width="14" height="14" viewBox="0 0 16 16"><path d="M9.5 3.5 L5 8 L9.5 12.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
-          <button onClick={onNext} title="Next" style={navBtn}>
+          <button onClick={onNext} title={loc('next')} style={navBtn}>
             <svg width="14" height="14" viewBox="0 0 16 16"><path d="M6.5 3.5 L11 8 L6.5 12.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
         </div>
@@ -147,28 +148,28 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 9, marginBottom: 14 }}>
               {isCharge ? (
                 <>
-                  <StatCard label="Energy" value={`+${d.kWh}`} unit="kWh" />
-                  <StatCard label="Duration" value={fmtHShort(d.durMin)} unit="" />
-                  <StatCard label="Range +" value={fmtInt(kmToUnit(d.rangeAddedKm ?? 0, units))} unit={units} />
-                  <StatCard label="Peak" value={Math.round(d.peakKw ?? 0)} unit="kW" />
-                  <StatCard label="Avg" value={Math.round(d.avgKw ?? 0)} unit="kW" />
-                  <StatCard label="Min" value={Math.round(d.minKw ?? 0)} unit="kW" />
+                  <StatCard label={loc('energy')} value={`+${d.kWh}`} unit="kWh" />
+                  <StatCard label={loc('duration')} value={fmtHShort(d.durMin)} unit="" />
+                  <StatCard label={loc('rangeAdded')} value={fmtInt(kmToUnit(d.rangeAddedKm ?? 0, units))} unit={units} />
+                  <StatCard label={loc('peak')} value={Math.round(d.peakKw ?? 0)} unit="kW" />
+                  <StatCard label={loc('average')} value={Math.round(d.avgKw ?? 0)} unit="kW" />
+                  <StatCard label={loc('minimum')} value={Math.round(d.minKw ?? 0)} unit="kW" />
                 </>
               ) : (
                 <>
-                  <StatCard label="Distance" value={dist(d.km ?? 0)} unit={units} />
-                  <StatCard label="Duration" value={fmtHShort(d.durMin)} unit="" />
-                  <StatCard label="Avg speed" value={spd(d.avgKmh ?? 0)} unit={speedUnit} />
-                  <StatCard label="Top speed" value={spd(d.maxKmh ?? 0)} unit={speedUnit} />
-                  <StatCard label="Energy" value={d.kWh} unit="kWh" />
-                  <StatCard label="Efficiency" value={Math.round((d.effWhKm ?? 0) * effFactor)} unit={`Wh/${units}`} />
+                  <StatCard label={loc('distance')} value={dist(d.km ?? 0)} unit={units} />
+                  <StatCard label={loc('duration')} value={fmtHShort(d.durMin)} unit="" />
+                  <StatCard label={loc('averageSpeed')} value={spd(d.avgKmh ?? 0)} unit={speedUnit} />
+                  <StatCard label={loc('topSpeed')} value={spd(d.maxKmh ?? 0)} unit={speedUnit} />
+                  <StatCard label={loc('energy')} value={d.kWh} unit="kWh" />
+                  <StatCard label={loc('efficiency')} value={Math.round((d.effWhKm ?? 0) * effFactor)} unit={`Wh/${units}`} />
                 </>
               )}
             </div>
 
             <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '12px 13px', marginBottom: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>State of charge</div>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>{loc('stateOfCharge')}</div>
                 <div style={{ fontSize: 11.5, fontFamily: "'JetBrains Mono',monospace", color: 'var(--legend)' }}>
                   {d.socStart}% → {d.socEnd}%
                 </div>
@@ -181,10 +182,10 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
             <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '13px 13px 11px' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>
-                  {isCharge ? 'Charging curve' : 'Speed & battery'}
+                  {isCharge ? loc('chargingCurve') : loc('speedAndBattery')}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--muted)', fontFamily: "'JetBrains Mono',monospace" }}>
-                  {isCharge ? 'power vs. state of charge' : socPer100 != null ? `${socPer100}% SoC / 100 ${units}` : ''}
+                  {isCharge ? loc('powerVsSoc') : socPer100 != null ? loc('socPerDistance', { soc: socPer100, unit: units }) : ''}
                 </div>
               </div>
               {curve || series ? (
@@ -238,25 +239,25 @@ export default function DetailPanel({ id, units, onClose, onPrev, onNext }: Prop
                       ))}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontFamily: "'JetBrains Mono',monospace", fontSize: 9.5, color: 'var(--faint)' }}>
-                    <span>{isCharge ? `${d.socStart}%` : 'Start'}</span>
-                    <span>{isCharge ? `${d.socEnd}%` : 'End'}</span>
+                    <span>{isCharge ? `${d.socStart}%` : loc('start')}</span>
+                    <span>{isCharge ? `${d.socEnd}%` : loc('end')}</span>
                   </div>
                   {series && (
                     <div style={{ display: 'flex', gap: 14, marginTop: 9 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ width: 14, height: 3, borderRadius: 2, background: '#5f7fd6' }} />
-                        <span style={{ fontSize: 10.5, color: 'var(--muted-2)' }}>Speed</span>
+                        <span style={{ fontSize: 10.5, color: 'var(--muted-2)' }}>{loc('speed')}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ width: 14, height: 0, borderTop: '2px dashed #e6a94f' }} />
-                        <span style={{ fontSize: 10.5, color: 'var(--muted-2)' }}>Battery %</span>
+                        <span style={{ fontSize: 10.5, color: 'var(--muted-2)' }}>{loc('battery')}</span>
                       </div>
                     </div>
                   )}
                 </>
               ) : (
                 <div style={{ fontSize: 11, color: 'var(--faint)', fontFamily: "'JetBrains Mono',monospace", padding: '20px 0' }}>
-                  No samples recorded for this {isCharge ? 'charge' : 'drive'}.
+                  {isCharge ? loc('noChargeSamples') : loc('noDriveSamples')}
                 </div>
               )}
             </div>

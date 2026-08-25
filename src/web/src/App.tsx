@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { api, type Activity, type AppConfig, type Car, type Summary, type Window } from './api'
 import { daysAgo, isoDay, rangeLabel, type RangeKey } from './format'
+import { loc } from './localization'
 import Header from './components/Header'
 import KpiGrid from './components/KpiGrid'
 import ActivityFeed from './components/ActivityFeed'
@@ -159,9 +160,9 @@ export default function App() {
   const nCharges = visibleSelection.filter((a) => a.kind === 'charge').length
   const selKm = visibleSelection.reduce((t, a) => t + (a.km ?? 0), 0)
   const selParts: string[] = []
-  if (nDrives) selParts.push(`${nDrives} ${nDrives === 1 ? 'drive' : 'drives'}`)
-  if (nCharges) selParts.push(`${nCharges} ${nCharges === 1 ? 'charge' : 'charges'}`)
-  const selSummary = selParts.join(' · ') || 'Nothing selected'
+  if (nDrives) selParts.push(loc('driveCount', { count: nDrives }))
+  if (nCharges) selParts.push(loc('chargeCount', { count: nCharges }))
+  const selSummary = selParts.join(' · ') || loc('nothingSelected')
 
   // Plain click toggles one row and sets the anchor; shift-click adds the
   // whole anchor→target range to the selection (additive).
@@ -207,7 +208,7 @@ export default function App() {
   if (!config) {
     return (
       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--muted)', fontSize: 13 }}>
-        {error ?? 'Loading…'}
+        {error ?? loc('loading')}
       </div>
     )
   }
@@ -305,7 +306,7 @@ export default function App() {
       </div>
 
       <footer style={{ flex: '0 0 auto', height: 34, display: 'flex', alignItems: 'center', padding: '0 20px', background: 'var(--panel)', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--faint)' }}>
-        Read-only dashboard for TeslaMate · Your data stays on your machine · Basemap tiles load from the configured tile server.
+        {loc('footer')}
       </footer>
     </div>
   )
