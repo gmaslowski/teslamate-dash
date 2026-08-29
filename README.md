@@ -246,6 +246,37 @@ All configuration is via environment variables. `TC_`-prefixed names override th
 | `TC_TITLE` | `TeslaMate Dash` | Header title |
 | `TC_MAP_STYLE_URL` | OpenFreeMap Positron | MapLibre style URL. Point at your own tiles for full privacy. |
 | `TC_DEMO` | auto | Force synthetic data on or off |
+| `TC_AUTH_USER` / `TC_AUTH_PASS` | (empty) | HTTP Basic Auth credentials. **Empty = access protection disabled (the default).** |
+| `TC_AUTH_SECRET` | (empty) | HMAC key for the persistent auth session cookie — set it when auth is enabled |
+
+### Optional access protection
+
+Access protection is **off by default**. To require a login, set both `TC_AUTH_USER` and
+`TC_AUTH_PASS` (and a random `TC_AUTH_SECRET` — it signs the session cookie):
+
+```yaml
+  dash:
+    environment:
+      - TC_AUTH_USER=admin
+      - TC_AUTH_PASS=${DASH_PASS}
+      - TC_AUTH_SECRET=${DASH_SECRET}   # e.g. openssl rand -hex 32
+```
+
+The first successful Basic Auth exchange sets an HttpOnly session cookie (HMAC-signed, 30-day
+TTL), so kiosk-style clients and PWA/Android wrappers are asked for credentials once, not on
+every launch. Brute-force attempts are rate-limited per IP (lockout after repeated failures).
+
+### Android companion app
+
+A small self-hosted Android wrapper (`android/`) shows the dashboard **fullscreen** in a
+WebView — no browser chrome, works without any browser installed. On first launch it asks for
+your Dash **address** (and optional Basic Auth login/password — leave empty when auth is
+disabled). Build it yourself with JDK 17 + Android SDK:
+
+```bash
+cd android && ./gradlew assembleRelease
+# see android/README.md for signing (keystore.properties) and details
+```
 
 ### Languages
 

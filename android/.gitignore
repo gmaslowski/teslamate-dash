@@ -1,0 +1,14 @@
+# Build output
+build/
+.gradle/
+
+# Machine-specific
+local.properties
+keystore.properties
+
+# Artifacts
+*.apk
+
+# IDE
+.idea/
+*.iml
