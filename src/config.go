@@ -16,8 +16,9 @@ type Config struct {
 	Units       string // "km" or "mi"
 	MapStyleURL string
 	Title       string
-	AuthUser    string // HTTP Basic Auth (empty = auth disabled)
-	AuthPass    string
+	AuthUser       string // HTTP Basic Auth (empty = auth disabled)
+	AuthPass       string
+	AuthSessionKey string // HMAC key for the session cookie (TC_AUTH_SECRET)
 
 	dbHost string
 	dbPort string
@@ -36,8 +37,9 @@ func loadConfig() Config {
 		Units:       firstEnv("km", "TC_UNITS"),
 		MapStyleURL: firstEnv("https://tiles.openfreemap.org/styles/positron", "TC_MAP_STYLE_URL"),
 		Title:       firstEnv("TeslaMate Dash", "TC_TITLE"),
-		AuthUser:    os.Getenv("TC_AUTH_USER"),
-		AuthPass:    os.Getenv("TC_AUTH_PASS"),
+		AuthUser:       os.Getenv("TC_AUTH_USER"),
+		AuthPass:       os.Getenv("TC_AUTH_PASS"),
+		AuthSessionKey: os.Getenv("TC_AUTH_SECRET"),
 
 		dbHost: dbHost,
 		dbPort: firstEnv("5432", "TC_DATABASE_PORT", "DATABASE_PORT"),

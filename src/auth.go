@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"crypto/subtle"
+	"encoding/hex"
 	"log"
 	"net"
 	"net/http"
@@ -40,6 +43,16 @@ func newAuthLimiter() *authLimiter {
 }
 
 const staleAfter = 15 * 60 // seconds: entry considered stale when fully idle
+
+// sessionCookie returns the HMAC-SHA256 session value for the given
+// credentials, keyed by TC_AUTH_SECRET.
+func sessionCookie(user, pass, secret string) string {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(user))
+	mac.Write([]byte{0})
+	mac.Write([]byte(pass))
+	return hex.EncodeToString(mac.Sum(nil))
+}
 
 func (l *authLimiter) cleanupLoop() {
 	t := time.NewTicker(10 * time.Minute)
@@ -132,10 +145,15 @@ func (l *authLimiter) recordSuccess(ip string) {
 	}
 }
 
-// basicAuth is an HTTP Basic Auth middleware with brute-force protection.
-// It activates only when both TC_AUTH_USER and TC_AUTH_PASS are set
-// (auth disabled otherwise), and compares credentials in constant time.
-func basicAuth(user, pass string, next http.Handler) http.Handler {
+// basicAuth is an HTTP Basic Auth middleware with brute-force protection
+// and a persistent session cookie. It activates only when both TC_AUTH_USER
+// and TC_AUTH_PASS are set (auth disabled otherwise), and compares
+// credentials in constant time.
+//
+// Flow: a valid Basic Auth exchange sets an HttpOnly cookie (HMAC of the
+// credentials, TC_AUTH_SECRET as the key). Subsequent requests are accepted
+// via the cookie, so kiosk/PWA clients don't get prompted on every launch.
+func basicAuth(user, pass, sessionSecret string, next http.Handler) http.Handler {
 	if strings.TrimSpace(user) == "" || strings.TrimSpace(pass) == "" {
 		return next // auth disabled
 	}
@@ -148,6 +166,15 @@ func basicAuth(user, pass string, next http.Handler) http.Handler {
 			w.Header().Set("Retry-After", strconv.Itoa(LOCKOUT_SECONDS))
 			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 			return
+		}
+		// valid session cookie?
+		if sessionSecret != "" {
+			if c, err := r.Cookie("tm_session"); err == nil && c.Value != "" {
+				if subtle.ConstantTimeCompare([]byte(c.Value), []byte(sessionCookie(user, pass, sessionSecret))) == 1 {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
 		}
 		u, p, ok := r.BasicAuth()
 		userOK := ok && subtle.ConstantTimeCompare([]byte(u), userBytes) == 1
@@ -165,6 +192,16 @@ func basicAuth(user, pass string, next http.Handler) http.Handler {
 			return
 		}
 		limiter.recordSuccess(ip)
+		if sessionSecret != "" {
+			http.SetCookie(w, &http.Cookie{
+				Name:     "tm_session",
+				Value:    sessionCookie(user, pass, sessionSecret),
+				Path:     "/",
+				MaxAge:   30 * 24 * 3600,
+				HttpOnly: true,
+				SameSite: http.SameSiteLaxMode,
+			})
+		}
 		next.ServeHTTP(w, r)
 	})
 }

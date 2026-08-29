@@ -47,7 +47,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           logRequests(basicAuth(cfg.AuthUser, cfg.AuthPass, mux)),
+		Handler:           logRequests(basicAuth(cfg.AuthUser, cfg.AuthPass, cfg.AuthSessionKey, mux)),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
