@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -32,7 +33,30 @@ type authLimiter struct {
 }
 
 func newAuthLimiter() *authLimiter {
-	return &authLimiter{state: make(map[string]*ipState)}
+	l := &authLimiter{state: make(map[string]*ipState)}
+	// periodic cleanup: drop entries that have been idle > STALE_AFTER
+	go l.cleanupLoop()
+	return l
+}
+
+const staleAfter = 15 * 60 // seconds: entry considered stale when fully idle
+
+func (l *authLimiter) cleanupLoop() {
+	t := time.NewTicker(10 * time.Minute)
+	defer t.Stop()
+	for range t.C {
+		l.mu.Lock()
+		now := time.Now().Unix()
+		for ip, s := range l.state {
+			idle := now - s.windowStart
+			if s.fails == 0 && s.blockedTill == 0 && (s.windowStart == 0 || idle > staleAfter) {
+				delete(l.state, ip)
+			} else if s.blockedTill > 0 && now-s.blockedTill > staleAfter {
+				delete(l.state, ip) // lockout long expired, drop the entry
+			}
+		}
+		l.mu.Unlock()
+	}
 }
 
 func (l *authLimiter) clientIP(r *http.Request) string {
@@ -43,7 +67,7 @@ func (l *authLimiter) clientIP(r *http.Request) string {
 	return host
 }
 
-func (l *authLimiter) blocked(ip string) bool {
+func (l *authLimiter) isBlocked(ip string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	s, ok := l.state[ip]
@@ -120,8 +144,8 @@ func basicAuth(user, pass string, next http.Handler) http.Handler {
 	passBytes := []byte(pass)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := limiter.clientIP(r)
-		if secs := limiter.blocked(ip); secs {
-			w.Header().Set("Retry-After", "300")
+		if limiter.isBlocked(ip) {
+			w.Header().Set("Retry-After", strconv.Itoa(LOCKOUT_SECONDS))
 			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 			return
 		}
