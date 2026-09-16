@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Optional signing: create keystore.properties (see keystore.properties.example).
+// Without it the release APK is built unsigned.
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+def hasKeystore = keystorePropsFile.exists()
+if (hasKeystore) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
+android {
+    namespace 'pro.netcraze.tmdash'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "pro.netcraze.tmdash"
+        minSdk 21
+        targetSdk 36
+        versionCode 5
+        versionName "1.0.3"
+    }
+
+    signingConfigs {
+        release {
+            if (hasKeystore) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
